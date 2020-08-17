@@ -1,0 +1,35 @@
+version: '3.4'
+
+services:
+  php:
+    build:
+      context: ./docker/app
+      args:
+        TIMEZONE: ${TIMEZONE}
+    volumes:
+     - ./app:/app
+     - ./docker/php/log.conf:/usr/local/etc/php-fpm.z/zz-log.conf
+     - ./docker/php/php.conf:/usr/local/etc/php/conf.d/zz-conf.ini
+    ports:
+     - 8081:8081
+    networks:
+      - reactphp-network
+
+  pgsql:
+    image: postgres:alpine
+    environment:
+      POSTGRES_PASSWORD: password
+    ports:
+      - 5433:5432
+    volumes:
+      - dbdata:/var/lib/postgresql/data
+    networks:
+      - reactphp-network
+
+volumes:
+  dbdata:
+    driver: local
+
+networks:
+  reactphp-network:
+    driver: bridge
